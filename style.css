@@ -30,8 +30,14 @@ header {
     padding: 20px;
     max-width: 400px;
     width: 100%;
+    margin: 0 auto; /* Center the card */
 }
 
+.NewToDo {
+    display: flex;
+    justify-content: center; /* Center the NewToDo section */
+    width: 100%;
+}
 
 main {
     display: flex;
@@ -39,7 +45,6 @@ main {
     justify-content: center;
     gap: 30px;
 }
-
 
 input, textarea {
     width: 90%;
@@ -49,7 +54,6 @@ input, textarea {
     border: none;
 }
 
-
 @media (max-width: 600px) {
     .menu {
         display: none;
@@ -58,5 +62,37 @@ input, textarea {
 
     .hamburger {
         display: block;
+    }
+
+    .cards {
+        flex-direction: column;
+        align-items: center; 
+    }
+
+    .card {
+        max-width: 90%;
+        text-align: center;
+    }
+
+    main {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    main {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card {
+        max-width: calc(50% - 15px);
+    }
+}
+
+@media (min-width: 1025px) {
+    .card {
+        max-width: calc(33.333% - 20px);
     }
 }
