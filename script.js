@@ -5,9 +5,10 @@ const apiUrl = 'https://jsonplaceholder.typicode.com/todos';
 // Feladatok tárolása
 let tasks = [];
 // DOM elemek
-const taskList = document.getElementById('task-list');
-const taskForm = document.getElementById('task-form');
-const taskInput = document.getElementById('task-input');
+const cardsContainer = document.querySelector('.cards');
+const taskForm = document.getElementById('newTaskForm');
+const taskTitleInput = document.getElementById('taskTitle');
+const taskDescriptionInput = document.getElementById('taskDescription');
 
 // Feladatok lekérése az API-ról
 async function fetchTasks() {
@@ -24,20 +25,58 @@ async function fetchTasks() {
 fetchTasks();
 // Feladatok megjelenítése
 function renderTasks() {
-    taskList.innerHTML = '';
+    if (!cardsContainer) {
+        return;
+    }
+    cardsContainer.innerHTML = '';
     tasks.forEach(task => {
-        const taskItem = document.createElement('li');
-        taskItem.className = 'task-item';
-        taskItem.textContent = task.title;
-        taskList.appendChild(taskItem);
+        const taskCard = document.createElement('div');
+        taskCard.className = 'task-card';
+        if (task.completed) {
+            taskCard.classList.add('completed');
+        }
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.completed;
+        checkbox.addEventListener('change', () => {
+            task.completed = checkbox.checked;
+            taskCard.classList.toggle('completed', task.completed);
+        });
+
+        const title = document.createElement('h3');
+        title.textContent = task.title;
+
+        const user = document.createElement('p');
+        user.textContent = `User: ${task.userId}`;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'delete-task';
+        deleteButton.textContent = 'Törlés';
+        deleteButton.addEventListener('click', () => {
+            tasks = tasks.filter(item => item.id !== task.id);
+            renderTasks();
+        });
+
+        taskCard.appendChild(checkbox);
+        taskCard.appendChild(title);
+        taskCard.appendChild(user);
+        taskCard.appendChild(deleteButton);
+        cardsContainer.appendChild(taskCard);
     });
 }
 
 // Új feladat létrehozása
 taskForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const titleValue = taskTitleInput.value.trim();
+    const descriptionValue = taskDescriptionInput.value.trim();
+    if (!titleValue) {
+        return;
+    }
     const newTask = {
-        title: taskInput.value,
+        title: descriptionValue ? `${titleValue} — ${descriptionValue}` : titleValue,
         completed: false,
         userId: 1
     };
@@ -52,7 +91,8 @@ taskForm.addEventListener('submit', async (e) => {
         const createdTask = await response.json();
         tasks.unshift(createdTask);
         renderTasks();
-        taskInput.value = '';
+        taskTitleInput.value = '';
+        taskDescriptionInput.value = '';
     } catch (error) {
         console.error('Hiba új feladat létrehozásakor:', error);
     }
