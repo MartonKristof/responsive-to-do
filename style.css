@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     background:
@@ -10,7 +14,6 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-
 header {
     display: flex;
     justify-content: space-between;
@@ -18,36 +21,51 @@ header {
     padding: 15px 20px;
 }
 
-.cards {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.card {
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
-    padding: 20px;
-    max-width: 400px;
-    width: 100%;
-    margin: 0 auto; /* Center the card */
-}
-
-.NewToDo {
-    display: flex;
-    justify-content: center; /* Center the NewToDo section */
-    width: 100%;
-}
-
 main {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 30px;
+    padding: 20px;
+}
+
+.cards {
+    display: grid;
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    .cards {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 1025px) {
+    .cards {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.card, .task-card {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 20px;
+    width: 100%;
+}
+
+.NewToDo {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
 }
 
 input, textarea {
-    width: 90%;
+    width: 100%;
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 8px;
@@ -64,35 +82,8 @@ input, textarea {
         display: block;
     }
 
-    .cards {
-        flex-direction: column;
-        align-items: center; 
-    }
-
-    .card {
-        max-width: 90%;
-        text-align: center;
-    }
-
     main {
         flex-direction: column;
         align-items: center;
-    }
-}
-
-@media (min-width: 601px) and (max-width: 1024px) {
-    main {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .card {
-        max-width: calc(50% - 15px);
-    }
-}
-
-@media (min-width: 1025px) {
-    .card {
-        max-width: calc(33.333% - 20px);
     }
 }
