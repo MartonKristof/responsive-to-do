@@ -12,6 +12,7 @@ const taskDescriptionInput = document.getElementById('taskDescription');
 const toggleTasksButton = document.getElementById('toggleTasks');
 const hamburgerButton = document.getElementById('hamburger');
 const menu = document.getElementById('menu');
+const themeToggleButton = document.getElementById('themeToggle');
 const DEFAULT_TASK_LIMIT = 10;
 let showAllTasks = false;
 
@@ -134,6 +135,34 @@ if (toggleTasksButton) {
 if (hamburgerButton && menu) {
     hamburgerButton.addEventListener('click', () => {
         menu.classList.toggle('menu-open');
+    });
+}
+
+function applyTheme(theme) {
+    if (theme === 'light') {
+        document.body.classList.add('light');
+        if (themeToggleButton) {
+            themeToggleButton.textContent = 'Sötét mód';
+        }
+    } else {
+        document.body.classList.remove('light');
+        if (themeToggleButton) {
+            themeToggleButton.textContent = 'Világos mód';
+        }
+    }
+}
+
+if (themeToggleButton) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    }
+
+    themeToggleButton.addEventListener('click', () => {
+        const isLight = document.body.classList.contains('light');
+        const nextTheme = isLight ? 'dark' : 'light';
+        localStorage.setItem('theme', nextTheme);
+        applyTheme(nextTheme);
     });
 }
 
