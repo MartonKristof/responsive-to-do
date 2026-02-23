@@ -23,48 +23,55 @@ async function fetchTasks() {
 }
 
 fetchTasks();
-// Feladatok megjelenítése
+// feladatkártya létrehozó függvény
+function createTaskCard(task) {
+    const taskCard = document.createElement('div');
+    taskCard.className = 'task-card';
+    if (task.completed) {
+        taskCard.classList.add('completed');
+    }
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = task.completed;
+    checkbox.addEventListener('change', () => {
+        task.completed = checkbox.checked;
+        taskCard.classList.toggle('completed', task.completed);
+    });
+
+    const title = document.createElement('h3');
+    title.textContent = task.title;
+
+    const user = document.createElement('p');
+    user.textContent = `User: ${task.userId}`;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'delete-task';
+    deleteButton.textContent = 'Törlés';
+    deleteButton.addEventListener('click', () => {
+        tasks = tasks.filter(item => item.id !== task.id);
+        renderTasks();
+    });
+
+    taskCard.appendChild(checkbox);
+    taskCard.appendChild(title);
+    taskCard.appendChild(user);
+    taskCard.appendChild(deleteButton);
+    return taskCard;
+}
+
+// dom feladat lista renderelése
 function renderTasks() {
     if (!cardsContainer) {
         return;
     }
     cardsContainer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
     tasks.forEach(task => {
-        const taskCard = document.createElement('div');
-        taskCard.className = 'task-card';
-        if (task.completed) {
-            taskCard.classList.add('completed');
-        }
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = task.completed;
-        checkbox.addEventListener('change', () => {
-            task.completed = checkbox.checked;
-            taskCard.classList.toggle('completed', task.completed);
-        });
-
-        const title = document.createElement('h3');
-        title.textContent = task.title;
-
-        const user = document.createElement('p');
-        user.textContent = `User: ${task.userId}`;
-
-        const deleteButton = document.createElement('button');
-        deleteButton.type = 'button';
-        deleteButton.className = 'delete-task';
-        deleteButton.textContent = 'Törlés';
-        deleteButton.addEventListener('click', () => {
-            tasks = tasks.filter(item => item.id !== task.id);
-            renderTasks();
-        });
-
-        taskCard.appendChild(checkbox);
-        taskCard.appendChild(title);
-        taskCard.appendChild(user);
-        taskCard.appendChild(deleteButton);
-        cardsContainer.appendChild(taskCard);
+        fragment.appendChild(createTaskCard(task));
     });
+    cardsContainer.appendChild(fragment);
 }
 
 // Új feladat létrehozása
@@ -97,6 +104,10 @@ taskForm.addEventListener('submit', async (e) => {
         console.error('Hiba új feladat létrehozásakor:', error);
     }
 });
+
+
+
+
 
 
 

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css"> 
+    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
     <title>Feladatkezelő</title>
 </head>
 <body>
@@ -15,7 +16,17 @@
             <a href="">Feladatok listája</a>
         </nav>
     </header>
-    <Main>
+    <main>
+        <div class="NewToDo">
+            <card>
+                <h2>Új feladat</h2>
+                <form id="newTaskForm">
+                    <input type="text" id="taskTitle" placeholder="Feladat címe" required>
+                    <textarea id="taskDescription" placeholder="Feladat leírása" required></textarea>
+                    <button type="submit">Hozzáadás</button>
+                </form>
+            </card>
+        </div>
         <div class="ToDo">
             <span id="feladatlista"></span>
             <h2>Feladatok</h2>
@@ -23,6 +34,7 @@
 
             </div>
         </div>
+
 
     <div class="NewToDo">
         <h2>Új feladat</h2>
@@ -38,5 +50,6 @@
 
 <script src="script.js"></script>
 
+  </main>
 </body>
 </html>
