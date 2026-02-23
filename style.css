@@ -18,7 +18,36 @@ header {
     padding: 15px 20px;
 }
 
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
 
+.card {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+}
+
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+
+input, textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
 
 
 @media (max-width: 600px) {
