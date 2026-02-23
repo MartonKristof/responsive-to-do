@@ -9,6 +9,11 @@ const cardsContainer = document.querySelector('.cards');
 const taskForm = document.getElementById('newTaskForm');
 const taskTitleInput = document.getElementById('taskTitle');
 const taskDescriptionInput = document.getElementById('taskDescription');
+const toggleTasksButton = document.getElementById('toggleTasks');
+const hamburgerButton = document.getElementById('hamburger');
+const menu = document.getElementById('menu');
+const DEFAULT_TASK_LIMIT = 10;
+let showAllTasks = false;
 
 // Feladatok lekérése az API-ról
 async function fetchTasks() {
@@ -68,10 +73,24 @@ function renderTasks() {
     }
     cardsContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
-    tasks.forEach(task => {
+    const visibleTasks = showAllTasks ? tasks : tasks.slice(0, DEFAULT_TASK_LIMIT);
+    visibleTasks.forEach(task => {
         fragment.appendChild(createTaskCard(task));
     });
     cardsContainer.appendChild(fragment);
+    updateToggleButton();
+}
+
+function updateToggleButton() {
+    if (!toggleTasksButton) {
+        return;
+    }
+    if (tasks.length <= DEFAULT_TASK_LIMIT) {
+        toggleTasksButton.hidden = true;
+        return;
+    }
+    toggleTasksButton.hidden = false;
+    toggleTasksButton.textContent = showAllTasks ? 'Vissza 10-re' : 'Összes megjelenítése';
 }
 
 // Új feladat létrehozása
@@ -104,6 +123,19 @@ taskForm.addEventListener('submit', async (e) => {
         console.error('Hiba új feladat létrehozásakor:', error);
     }
 });
+
+if (toggleTasksButton) {
+    toggleTasksButton.addEventListener('click', () => {
+        showAllTasks = !showAllTasks;
+        renderTasks();
+    });
+}
+
+if (hamburgerButton && menu) {
+    hamburgerButton.addEventListener('click', () => {
+        menu.classList.toggle('menu-open');
+    });
+}
 
 
 
