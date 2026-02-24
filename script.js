@@ -1,189 +1,380 @@
 
 //Api lehívas
-const apiUrl = 'https://jsonplaceholder.typicode.com/todos';
+const apiVegpont = 'https://jsonplaceholder.typicode.com/todos';
+const TAROLASI_KULCS = 'feladatokTarolo';
+const CIM_MAX_HOSSZ = 60;
+const LEIRAS_MAX_HOSSZ = 200;
+const UZENET_IDOZITO = 3000;
 
 // Feladatok tárolása
-let tasks = [];
+let feladatok = [];
 // DOM elemek
-const cardsContainer = document.querySelector('.cards');
-const taskForm = document.getElementById('newTaskForm');
-const taskTitleInput = document.getElementById('taskTitle');
-const taskDescriptionInput = document.getElementById('taskDescription');
-const searchInput = document.getElementById('searchTasks');
-const toggleTasksButton = document.getElementById('toggleTasks');
-const hamburgerButton = document.getElementById('hamburger');
-const menu = document.getElementById('menu');
-const themeToggleButton = document.getElementById('themeToggle');
-const DEFAULT_TASK_LIMIT = 10;
-let showAllTasks = false;
-let searchQuery = '';
+const kartyakKontener = document.querySelector('.kartyak');
+const feladatUrlap = document.getElementById('ujFeladatUrlap');
+const feladatCimInput = document.getElementById('feladatCim');
+const feladatLeirasInput = document.getElementById('feladatLeiras');
+const keresoInput = document.getElementById('feladatKereses');
+const feladatokKapcsoloGomb = document.getElementById('feladatokKapcsolo');
+const hamburgerGomb = document.getElementById('hamburgerGomb');
+const navigacioMenu = document.getElementById('navigacio');
+const temaValtoGomb = document.getElementById('temaValto');
+const allapotUzenet = document.getElementById('allapotUzenet');
+const betoltesAllapot = document.getElementById('betoltesAllapot');
+const uresAllapot = document.getElementById('uresAllapot');
+const cimHibaUzenet = document.getElementById('cimHibaUzenet');
+const leirasHibaUzenet = document.getElementById('leirasHibaUzenet');
+const kuldesGomb = feladatUrlap ? feladatUrlap.querySelector('button[type="submit"]') : null;
+const ALAP_FELADAT_LIMIT = 10;
+let mutassMindet = false;
+let keresoKifejezes = '';
+let uzenetIdozito;
+let betoltesFolyamatban = false;
 
-// Feladatok lekérése az API-ról
-async function fetchTasks() {
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        tasks = data;
-        renderTasks();
-    } catch (error) {
-        console.error('Hiba a feladatok lekérésekor:', error);
+betoltesAllit(false);
+
+function uzenetMegjelenit(szoveg, tipus = 'info', idozites = UZENET_IDOZITO) {
+    if (!allapotUzenet) {
+        return;
+    }
+    allapotUzenet.textContent = szoveg;
+    allapotUzenet.className = `allapot ${tipus}`;
+    allapotUzenet.hidden = false;
+    if (uzenetIdozito) {
+        clearTimeout(uzenetIdozito);
+    }
+    if (idozites) {
+        uzenetIdozito = setTimeout(() => {
+            allapotUzenet.hidden = true;
+        }, idozites);
     }
 }
 
-fetchTasks();
+function betoltesAllit(betoltes, cimke = 'Betöltés...') {
+    betoltesFolyamatban = betoltes;
+    if (betoltesAllapot) {
+        betoltesAllapot.textContent = cimke;
+        betoltesAllapot.hidden = !betoltes;
+    }
+    if (kartyakKontener) {
+        kartyakKontener.setAttribute('aria-busy', String(betoltes));
+    }
+}
+
+function urlapBetoltesAllit(betoltes) {
+    if (!kuldesGomb) {
+        return;
+    }
+    kuldesGomb.disabled = betoltes;
+    kuldesGomb.textContent = betoltes ? 'Mentés...' : 'Hozzáadás';
+}
+
+function mezoHibaAllit(elem, uzenet) {
+    if (!elem) {
+        return;
+    }
+    elem.textContent = uzenet;
+    elem.hidden = !uzenet;
+}
+
+function feladatNormalizal(feladat) {
+    return {
+        id: feladat.id ?? Date.now(),
+        title: feladat.title || 'Névtelen feladat',
+        description: feladat.description || '',
+        completed: Boolean(feladat.completed),
+        userId: feladat.userId ?? 1
+    };
+}
+
+function feladatokMentese() {
+    localStorage.setItem(TAROLASI_KULCS, JSON.stringify(feladatok));
+}
+
+function feladatokBetolteseTarolobol() {
+    try {
+        const tarolt = localStorage.getItem(TAROLASI_KULCS);
+        if (!tarolt) {
+            return [];
+        }
+        const feldolgozott = JSON.parse(tarolt);
+        if (!Array.isArray(feldolgozott)) {
+            return [];
+        }
+        return feldolgozott.map(feladatNormalizal);
+    } catch (hiba) {
+        console.error('Hiba a helyi tároló olvasásakor:', hiba);
+        return [];
+    }
+}
+
+// Feladatok lekérése az API-ról
+async function feladatokLekerse() {
+    betoltesAllit(true);
+    try {
+        const valasz = await fetch(apiVegpont);
+        if (!valasz.ok) {
+            throw new Error(`API hiba: ${valasz.status}`);
+        }
+        const adatok = await valasz.json();
+        feladatok = adatok.map(feladatNormalizal);
+        feladatokMentese();
+        feladatokRenderel();
+        uzenetMegjelenit('Feladatok betöltve az API-ból.', 'siker');
+    } catch (hiba) {
+        console.error('Hiba a feladatok lekérésekor:', hiba);
+        uzenetMegjelenit('Nem sikerült betölteni az API-t. Helyi adatokkal próbálkozunk.', 'hiba');
+        const taroltFeladatok = feladatokBetolteseTarolobol();
+        if (taroltFeladatok.length > 0) {
+            feladatok = taroltFeladatok;
+            feladatokRenderel();
+        } else {
+            feladatok = [];
+            feladatokRenderel();
+        }
+    } finally {
+        betoltesAllit(false);
+    }
+}
+
+const taroltFeladatok = feladatokBetolteseTarolobol();
+if (taroltFeladatok.length > 0) {
+    feladatok = taroltFeladatok;
+    feladatokRenderel();
+    betoltesAllit(false);
+} else {
+    feladatokLekerse();
+}
 // feladatkártya létrehozó függvény
-function createTaskCard(task) {
-    const taskCard = document.createElement('div');
-    taskCard.className = 'task-card';
-    if (task.completed) {
-        taskCard.classList.add('completed');
+function feladatKartyaLetrehoz(feladat) {
+    const feladatKartya = document.createElement('div');
+    feladatKartya.className = 'feladat-kartya';
+    if (feladat.completed) {
+        feladatKartya.classList.add('kesz');
     }
 
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = task.completed;
-    checkbox.addEventListener('change', () => {
-        task.completed = checkbox.checked;
-        taskCard.classList.toggle('completed', task.completed);
+    const jelolo = document.createElement('input');
+    const jeloloId = `feladat-${feladat.id}`;
+    jelolo.type = 'checkbox';
+    jelolo.id = jeloloId;
+    jelolo.checked = feladat.completed;
+    jelolo.setAttribute('aria-label', `Feladat kész: ${feladat.title}`);
+    jelolo.addEventListener('change', () => {
+        feladat.completed = jelolo.checked;
+        feladatKartya.classList.toggle('kesz', feladat.completed);
+        feladatokMentese();
+        uzenetMegjelenit(feladat.completed ? 'Feladat késznek jelölve.' : 'Feladat visszaállítva.', 'siker');
     });
 
-    const title = document.createElement('h3');
-    title.textContent = task.title;
+    const jeloloCimke = document.createElement('label');
+    jeloloCimke.className = 'csak-olvaso';
+    jeloloCimke.setAttribute('for', jeloloId);
+    jeloloCimke.textContent = 'Feladat kész';
 
-    const user = document.createElement('p');
-    user.textContent = `User: ${task.userId}`;
+    const cim = document.createElement('h3');
+    cim.textContent = feladat.title;
 
-    const deleteButton = document.createElement('button');
-    deleteButton.type = 'button';
-    deleteButton.className = 'delete-task';
-    deleteButton.textContent = 'Törlés';
-    deleteButton.addEventListener('click', () => {
-        tasks = tasks.filter(item => item.id !== task.id);
-        renderTasks();
+    const leiras = document.createElement('p');
+    if (feladat.description) {
+        leiras.textContent = feladat.description;
+    }
+
+    const felhasznalo = document.createElement('p');
+    felhasznalo.textContent = `User: ${feladat.userId}`;
+
+    const torlesGomb = document.createElement('button');
+    torlesGomb.type = 'button';
+    torlesGomb.className = 'feladat-torles';
+    torlesGomb.textContent = 'Törlés';
+    torlesGomb.addEventListener('click', () => {
+        feladatok = feladatok.filter(item => item.id !== feladat.id);
+        feladatokMentese();
+        feladatokRenderel();
+        uzenetMegjelenit('Feladat törölve.', 'info');
     });
 
-    taskCard.appendChild(checkbox);
-    taskCard.appendChild(title);
-    taskCard.appendChild(user);
-    taskCard.appendChild(deleteButton);
-    return taskCard;
+    feladatKartya.appendChild(jelolo);
+    feladatKartya.appendChild(jeloloCimke);
+    feladatKartya.appendChild(cim);
+    if (feladat.description) {
+        feladatKartya.appendChild(leiras);
+    }
+    feladatKartya.appendChild(felhasznalo);
+    feladatKartya.appendChild(torlesGomb);
+    return feladatKartya;
 }
 
 // dom feladat lista renderelése
-function renderTasks() {
-    if (!cardsContainer) {
+function feladatokRenderel() {
+    if (!kartyakKontener) {
         return;
     }
-    cardsContainer.innerHTML = '';
-    const fragment = document.createDocumentFragment();
-    const filteredTasks = getFilteredTasks();
-    const visibleTasks = showAllTasks ? filteredTasks : filteredTasks.slice(0, DEFAULT_TASK_LIMIT);
-    visibleTasks.forEach(task => {
-        fragment.appendChild(createTaskCard(task));
+    kartyakKontener.innerHTML = '';
+    const toredelek = document.createDocumentFragment();
+    const szurtFeladatLista = szurtFeladatok();
+    const lathatoFeladatok = mutassMindet ? szurtFeladatLista : szurtFeladatLista.slice(0, ALAP_FELADAT_LIMIT);
+    if (uresAllapot) {
+        uresAllapot.hidden = betoltesFolyamatban || szurtFeladatLista.length !== 0;
+    }
+    lathatoFeladatok.forEach(feladat => {
+        toredelek.appendChild(feladatKartyaLetrehoz(feladat));
     });
-    cardsContainer.appendChild(fragment);
-    updateToggleButton(filteredTasks.length);
+    kartyakKontener.appendChild(toredelek);
+    kapcsoloGombFrissit(szurtFeladatLista.length);
 }
 
-function updateToggleButton(taskCount) {
-    if (!toggleTasksButton) {
+function kapcsoloGombFrissit(feladatDb) {
+    if (!feladatokKapcsoloGomb) {
         return;
     }
-    if (taskCount <= DEFAULT_TASK_LIMIT) {
-        toggleTasksButton.hidden = true;
+    if (feladatDb <= ALAP_FELADAT_LIMIT) {
+        feladatokKapcsoloGomb.hidden = true;
         return;
     }
-    toggleTasksButton.hidden = false;
-    toggleTasksButton.textContent = showAllTasks ? 'Vissza 10-re' : 'Összes megjelenítése';
+    feladatokKapcsoloGomb.hidden = false;
+    feladatokKapcsoloGomb.textContent = mutassMindet ? 'Vissza 10-re' : 'Összes megjelenítése';
 }
 
-function getFilteredTasks() {
-    if (!searchQuery) {
-        return tasks;
+function szurtFeladatok() {
+    if (!keresoKifejezes) {
+        return feladatok;
     }
-    const normalizedQuery = searchQuery.toLowerCase();
-    return tasks.filter(task => task.title.toLowerCase().includes(normalizedQuery));
+    const normalizaltKereses = keresoKifejezes.toLowerCase();
+    return feladatok.filter(feladat => {
+        const cimTalalat = feladat.title.toLowerCase().includes(normalizaltKereses);
+        const leirasTalalat = feladat.description && feladat.description.toLowerCase().includes(normalizaltKereses);
+        return cimTalalat || leirasTalalat;
+    });
 }
 
 // Új feladat létrehozása
-if (taskForm) {
-    taskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const titleValue = taskTitleInput.value.trim();
-        const descriptionValue = taskDescriptionInput.value.trim();
-        if (!titleValue) {
+if (feladatUrlap) {
+    feladatUrlap.addEventListener('submit', async (esemeny) => {
+        esemeny.preventDefault();
+        const cimErtek = feladatCimInput.value.trim();
+        const leirasErtek = feladatLeirasInput.value.trim();
+        mezoHibaAllit(cimHibaUzenet, '');
+        mezoHibaAllit(leirasHibaUzenet, '');
+        if (!cimErtek) {
+            mezoHibaAllit(cimHibaUzenet, 'A feladat címe kötelező.');
+            uzenetMegjelenit('Hiányzó mező: feladat címe.', 'hiba');
             return;
         }
-        const newTask = {
-            title: descriptionValue ? `${titleValue} — ${descriptionValue}` : titleValue,
+        if (!leirasErtek) {
+            mezoHibaAllit(leirasHibaUzenet, 'A feladat leírása kötelező.');
+            uzenetMegjelenit('Hiányzó mező: feladat leírása.', 'hiba');
+            return;
+        }
+        if (cimErtek.length > CIM_MAX_HOSSZ) {
+            mezoHibaAllit(cimHibaUzenet, `A cím maximum ${CIM_MAX_HOSSZ} karakter lehet.`);
+            uzenetMegjelenit('Túl hosszú cím.', 'hiba');
+            return;
+        }
+        if (leirasErtek.length > LEIRAS_MAX_HOSSZ) {
+            mezoHibaAllit(leirasHibaUzenet, `A leírás maximum ${LEIRAS_MAX_HOSSZ} karakter lehet.`);
+            uzenetMegjelenit('Túl hosszú leírás.', 'hiba');
+            return;
+        }
+        const ujFeladat = {
+            id: Date.now(),
+            title: cimErtek,
+            description: leirasErtek,
             completed: false,
             userId: 1
         };
+        urlapBetoltesAllit(true);
         try {
-            const response = await fetch(apiUrl, {
+            const valasz = await fetch(apiVegpont, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newTask)
+                body: JSON.stringify(ujFeladat)
             });
-            const createdTask = await response.json();
-            tasks.unshift(createdTask);
-            renderTasks();
-            taskTitleInput.value = '';
-            taskDescriptionInput.value = '';
-        } catch (error) {
-            console.error('Hiba új feladat létrehozásakor:', error);
+            if (!valasz.ok) {
+                throw new Error(`API hiba: ${valasz.status}`);
+            }
+            const letrehozottFeladat = await valasz.json();
+            feladatok.unshift(feladatNormalizal({ ...ujFeladat, id: letrehozottFeladat.id ?? ujFeladat.id }));
+            feladatokMentese();
+            feladatokRenderel();
+            feladatCimInput.value = '';
+            feladatLeirasInput.value = '';
+            uzenetMegjelenit('Feladat sikeresen létrehozva.', 'siker');
+        } catch (hiba) {
+            console.error('Hiba új feladat létrehozásakor:', hiba);
+            feladatok.unshift(feladatNormalizal(ujFeladat));
+            feladatokMentese();
+            feladatokRenderel();
+            uzenetMegjelenit('API hiba. A feladat helyben elmentve.', 'hiba');
+        } finally {
+            urlapBetoltesAllit(false);
         }
     });
 }
 
-if (searchInput) {
-    searchInput.addEventListener('input', (event) => {
-        searchQuery = event.target.value.trim();
-        showAllTasks = false;
-        renderTasks();
+if (feladatCimInput) {
+    feladatCimInput.addEventListener('input', () => mezoHibaAllit(cimHibaUzenet, ''));
+}
+
+if (feladatLeirasInput) {
+    feladatLeirasInput.addEventListener('input', () => mezoHibaAllit(leirasHibaUzenet, ''));
+}
+
+if (keresoInput) {
+    keresoInput.addEventListener('input', (esemeny) => {
+        keresoKifejezes = esemeny.target.value.trim();
+        mutassMindet = false;
+        feladatokRenderel();
     });
 }
 
-if (toggleTasksButton) {
-    toggleTasksButton.addEventListener('click', () => {
-        showAllTasks = !showAllTasks;
-        renderTasks();
+if (feladatokKapcsoloGomb) {
+    feladatokKapcsoloGomb.addEventListener('click', () => {
+        mutassMindet = !mutassMindet;
+        feladatokRenderel();
     });
 }
 
-if (hamburgerButton && menu) {
-    hamburgerButton.addEventListener('click', () => {
-        menu.classList.toggle('menu-open');
+if (hamburgerGomb && navigacioMenu) {
+    hamburgerGomb.addEventListener('click', () => {
+        navigacioMenu.classList.toggle('menu-nyitva');
+        const menuNyitva = navigacioMenu.classList.contains('menu-nyitva');
+        hamburgerGomb.setAttribute('aria-expanded', String(menuNyitva));
+    });
+
+    hamburgerGomb.addEventListener('keydown', (esemeny) => {
+        if (esemeny.key === 'Enter' || esemeny.key === ' ') {
+            esemeny.preventDefault();
+            hamburgerGomb.click();
+        }
     });
 }
 
-function applyTheme(theme) {
-    if (theme === 'light') {
-        document.body.classList.add('light');
-        if (themeToggleButton) {
-            themeToggleButton.textContent = 'Sötét mód';
+function temaAlkalmaz(tema) {
+    if (tema === 'vilagos') {
+        document.body.classList.add('vilagos');
+        if (temaValtoGomb) {
+            temaValtoGomb.textContent = 'Sötét mód';
         }
     } else {
-        document.body.classList.remove('light');
-        if (themeToggleButton) {
-            themeToggleButton.textContent = 'Világos mód';
+        document.body.classList.remove('vilagos');
+        if (temaValtoGomb) {
+            temaValtoGomb.textContent = 'Világos mód';
         }
     }
 }
 
-if (themeToggleButton) {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        applyTheme(savedTheme);
+if (temaValtoGomb) {
+    const mentettTema = localStorage.getItem('tema');
+    if (mentettTema) {
+        temaAlkalmaz(mentettTema);
     }
 
-    themeToggleButton.addEventListener('click', () => {
-        const isLight = document.body.classList.contains('light');
-        const nextTheme = isLight ? 'dark' : 'light';
-        localStorage.setItem('theme', nextTheme);
-        applyTheme(nextTheme);
+    temaValtoGomb.addEventListener('click', () => {
+        const vilagosAktiv = document.body.classList.contains('vilagos');
+        const kovetkezoTema = vilagosAktiv ? 'sotet' : 'vilagos';
+        localStorage.setItem('tema', kovetkezoTema);
+        temaAlkalmaz(kovetkezoTema);
     });
 }
 

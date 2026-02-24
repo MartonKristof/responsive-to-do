@@ -1,6 +1,6 @@
 :root {
     --text-color: #ffffff;
-    --surface-bg: rgba(0, 0, 0, 0.5);
+    --surface-bg: rgba(181, 181, 181, 0.4);
     --menu-bg: rgba(255, 255, 255, 0.1);
     --menu-bg-hover: rgba(255, 255, 255, 0.18);
     --button-bg: #6c5ce7;
@@ -15,9 +15,21 @@
         #1b1423;
 }
 
-body.light {
+body.vilagos {
     --text-color: #1a1a1a;
-    --surface-bg: rgba(255, 255, 255, 0.8);
+    --surface-bg: rgba(255, 253, 253, 0.4);
+}
+body.vilagos .hamburger-ikon {
+    background: rgba(0, 0, 0, 0.08);
+}
+body.vilagos .hamburger-ikon::before,
+body.vilagos .hamburger-ikon::after {
+    background: #1a1a1a;
+}
+body.vilagos .hamburger-ikon::before {
+    box-shadow: 0 6px 0 0 #1a1a1a;
+}
+body.vilagos {
     --menu-bg: rgba(0, 0, 0, 0.08);
     --menu-bg-hover: rgba(0, 0, 0, 0.12);
     --button-bg: #2d9cdb;
@@ -38,6 +50,10 @@ body.light {
     box-sizing: border-box;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 body {
     margin: 0;
     background: var(--page-bg);
@@ -54,19 +70,19 @@ header {
     gap: 16px;
 }
 
-.brand {
+.marka {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.menu {
+.navigacio-menu {
     display: flex;
     gap: 12px;
     align-items: center;
 }
 
-.hamburger {
+.hamburger-ikon {
     display: none;
     width: 36px;
     height: 36px;
@@ -76,8 +92,8 @@ header {
     position: relative;
 }
 
-.hamburger::before,
-.hamburger::after {
+.hamburger-ikon::before,
+.hamburger-ikon::after {
     content: "";
     position: absolute;
     left: 8px;
@@ -87,16 +103,16 @@ header {
     border-radius: 2px;
 }
 
-.hamburger::before {
+.hamburger-ikon::before {
     top: 12px;
     box-shadow: 0 6px 0 0 white;
 }
 
-.hamburger::after {
+.hamburger-ikon::after {
     top: 24px;
 }
 
-.menu a {
+.navigacio-menu a {
     color: var(--text-color);
     text-decoration: none;
     padding: 8px 12px;
@@ -105,21 +121,21 @@ header {
     transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.menu a:hover {
+.navigacio-menu a:hover {
     background: var(--menu-bg-hover);
     transform: translateY(-1px);
 }
 
 
-.cards {
+.kartyak {
     display: grid;
     grid-template-columns: repeat(3, minmax(220px, 1fr));
     gap: 12px;
     width: 100%;
 }
 
-.card,
-.task-card {
+.kartya,
+.feladat-kartya {
     background: var(--surface-bg);
     border-radius: 12px;
     padding: 16px;
@@ -128,18 +144,18 @@ header {
     word-break: break-word;
 }
 
-.task-card {
+.feladat-kartya {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.task-card.completed h3 {
+.feladat-kartya.kesz h3 {
     text-decoration: line-through;
     opacity: 0.7;
 }
 
-.task-card.completed {
+.feladat-kartya.kesz {
     background: #2ecc71;
     opacity: 0.85;
 }
@@ -159,6 +175,12 @@ input, textarea {
     padding: 10px;
     border-radius: 8px;
     border: none;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-weight: 600;
 }
 
 button {
@@ -182,11 +204,17 @@ button:active {
     transform: translateY(0);
 }
 
-.delete-task {
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.feladat-torles {
     background: var(--danger-bg);
 }
 
-.delete-task:hover {
+.feladat-torles:hover {
     background: var(--danger-bg-hover);
 }
 
@@ -210,7 +238,7 @@ input[type="checkbox"]::before {
     box-shadow: inset 1em 1em var(--checkbox-color);
 }
 
-.theme-toggle {
+.tema-valto {
     background: transparent;
     border: 1px solid var(--menu-bg-hover);
     color: var(--text-color);
@@ -221,12 +249,99 @@ input[type="checkbox"]:checked::before {
     transform: scale(1);
 }
 
-.ToDo,
-.NewToDo {
+.feladat-resz,
+.uj-feladat-resz {
     width: min(100%, 900px);
 }
 
-.task-tools {
+.allapot {
+    margin: 8px 0 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.allapot.siker {
+    background: rgba(46, 204, 113, 0.2);
+}
+
+.allapot.hiba {
+    background: rgba(231, 76, 60, 0.2);
+}
+
+.allapot.info {
+    background: rgba(52, 152, 219, 0.2);
+}
+
+.betoltes {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.betoltes::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: var(--text-color);
+    animation: spin 0.8s linear infinite;
+}
+
+.ures-allapot {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--surface-bg);
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.urlap-hiba {
+    display: block;
+    color: #ffb4a2;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.csak-olvaso {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (min-width: 1000px) {
+    main {
+        display: grid;
+        grid-template-columns: minmax(280px, 1fr) minmax(420px, 2fr);
+        align-items: start;
+    }
+
+    .feladat-resz,
+    .uj-feladat-resz {
+        width: 100%;
+        max-width: none;
+    }
+
+    #feladatLeiras {
+        height: 430px;
+    }
+}
+
+.feladat-eszkozok {
     display: flex;
     gap: 12px;
     align-items: center;
@@ -234,7 +349,7 @@ input[type="checkbox"]:checked::before {
     margin-bottom: 12px;
 }
 
-.task-tools input[type="search"] {
+.feladat-eszkozok input[type="search"] {
     flex: 1 1 240px;
     margin-bottom: 0;
 }
@@ -249,11 +364,11 @@ input[type="checkbox"]:checked::before {
         padding: 0 20px 24px;
     }
 
-    .NewToDo {
+    .uj-feladat-resz {
         width: min(100%, 560px);
     }
 
-    .cards {
+    .kartyak {
         grid-template-columns: repeat(2, minmax(200px, 1fr));
         gap: 10px;
     }
@@ -261,17 +376,17 @@ input[type="checkbox"]:checked::before {
 
 
 @media (max-width: 600px) {
-    .cards {
+    .kartyak {
         grid-template-columns: 1fr;
         gap: 8px;
     }
 
-    .card,
-    .task-card {
+    .kartya,
+    .feladat-kartya {
         padding: 14px;
     }
 
-    .menu {
+    .navigacio-menu {
         display: none;
         flex-direction: column;
         width: 100%;
@@ -279,11 +394,11 @@ input[type="checkbox"]:checked::before {
         gap: 8px;
     }
 
-    .menu.menu-open {
+    .navigacio-menu.menu-nyitva {
         display: flex;
     }
 
-    .hamburger {
+    .hamburger-ikon {
         display: block;
     }
 
