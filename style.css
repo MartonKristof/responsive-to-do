@@ -1,14 +1,14 @@
 :root {
-    --text-color: #ffffff;
-    --surface-bg: rgba(181, 181, 181, 0.4);
-    --menu-bg: rgba(255, 255, 255, 0.1);
-    --menu-bg-hover: rgba(255, 255, 255, 0.18);
-    --button-bg: #6c5ce7;
-    --button-bg-hover: #7d6cf0;
-    --danger-bg: #ff4d6d;
-    --danger-bg-hover: #ff6b85;
-    --checkbox-color: #a78bfa;
-    --page-bg:
+    --szoveg-szin: #ffffff;
+    --felulet-hatter: rgba(181, 181, 181, 0.4);
+    --menu-hatter: rgba(255, 255, 255, 0.1);
+    --menu-hatter-hover: rgba(255, 255, 255, 0.288);
+    --gomb-hatter: #6c5ce7;
+    --gomb-hatter-hover: #7d6cf0;
+    --veszely-hatter: #ff4d6d;
+    --veszely-hatter-hover: #ff6b85;
+    --jelolo-szin: #a78bfa;
+    --oldal-hatter:
         radial-gradient(55rem 40rem at 95% 95%, rgb(255, 0, 85), transparent 100%),
         radial-gradient(80rem 10rem at 50% 100%, rgb(0, 174, 255), transparent 100%),
         radial-gradient(80rem 30rem at 30% 80%, rgb(85, 0, 255), transparent 90%),
@@ -16,28 +16,16 @@
 }
 
 body.vilagos {
-    --text-color: #1a1a1a;
-    --surface-bg: rgba(255, 253, 253, 0.4);
-}
-body.vilagos .hamburger-ikon {
-    background: rgba(0, 0, 0, 0.08);
-}
-body.vilagos .hamburger-ikon::before,
-body.vilagos .hamburger-ikon::after {
-    background: #1a1a1a;
-}
-body.vilagos .hamburger-ikon::before {
-    box-shadow: 0 6px 0 0 #1a1a1a;
-}
-body.vilagos {
-    --menu-bg: rgba(0, 0, 0, 0.08);
-    --menu-bg-hover: rgba(0, 0, 0, 0.12);
-    --button-bg: #2d9cdb;
-    --button-bg-hover: #3aa6e0;
-    --danger-bg: #e84b6c;
-    --danger-bg-hover: #f06a86;
-    --checkbox-color: #2d9cdb;
-    --page-bg:
+    --szoveg-szin: #1a1a1a;
+    --felulet-hatter: rgba(255, 253, 253, 0.4);
+    --menu-hatter: rgba(0, 0, 0, 0.08);
+    --menu-hatter-hover: rgba(0, 0, 0, 0.12);
+    --gomb-hatter: #2d9cdb;
+    --gomb-hatter-hover: #3aa6e0;
+    --veszely-hatter: #e84b6c;
+    --veszely-hatter-hover: #f06a86;
+    --jelolo-szin: #2d9cdb;
+    --oldal-hatter:
         radial-gradient(55rem 40rem at 95% 95%, rgb(255, 200, 220), transparent 100%),
         radial-gradient(80rem 10rem at 50% 100%, rgb(180, 220, 255), transparent 100%),
         radial-gradient(80rem 30rem at 30% 80%, rgb(210, 200, 255), transparent 90%),
@@ -56,10 +44,14 @@ body.vilagos {
 
 body {
     margin: 0;
-    background: var(--page-bg);
+    background: var(--oldal-hatter);
     background-attachment: fixed;
-    color: var(--text-color);
+    color: var(--szoveg-szin);
     font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+    scroll-padding-top: 130px;
 }
 
 header {
@@ -70,16 +62,96 @@ header {
     gap: 16px;
 }
 
+.fejlec {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+body.vilagos .fejlec {
+    background: rgba(255, 255, 255, 0.7);
+}
+
 .marka {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
+.fejlec-jobb {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.kereso-urlap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--menu-hatter-hover);
+    backdrop-filter: blur(12px);
+}
+
+body.vilagos .kereso-urlap {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.kereso-urlap input {
+    background: transparent;
+    border: none;
+    margin: 0;
+    padding: 6px 8px;
+    min-width: 220px;
+    color: var(--szoveg-szin);
+}
+
+.kereso-urlap input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.vilagos .kereso-urlap input::placeholder {
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.kereso-gomb {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border-radius: 999px;
+    background: transparent;
+    border: none;
+    color: var(--szoveg-szin);
+    box-shadow: none;
+}
+
+.kereso-gomb svg {
+    width: 16px;
+    height: 16px;
+}
+
+.kereso-gomb:hover {
+    background: var(--menu-hatter-hover);
+    transform: none;
+}
+
+.kereso-gomb:active {
+    transform: none;
+}
+
 .navigacio-menu {
     display: flex;
-    gap: 12px;
     align-items: center;
+    gap: 12px;
 }
 
 .hamburger-ikon {
@@ -112,20 +184,40 @@ header {
     top: 24px;
 }
 
+body.vilagos .hamburger-ikon {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+body.vilagos .hamburger-ikon::before,
+body.vilagos .hamburger-ikon::after {
+    background: #1a1a1a;
+}
+
+body.vilagos .hamburger-ikon::before {
+    box-shadow: 0 6px 0 0 #1a1a1a;
+}
+
 .navigacio-menu a {
-    color: var(--text-color);
+    color: var(--szoveg-szin);
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 999px;
-    background: var(--menu-bg);
+    background: var(--menu-hatter);
     transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .navigacio-menu a:hover {
-    background: var(--menu-bg-hover);
+    background: var(--menu-hatter-hover);
     transform: translateY(-1px);
 }
 
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 16px 24px;
+    min-height: calc(100vh - 80px);
+}
 
 .kartyak {
     display: grid;
@@ -136,11 +228,10 @@ header {
 
 .kartya,
 .feladat-kartya {
-    background: var(--surface-bg);
+    background: var(--felulet-hatter);
     border-radius: 12px;
     padding: 16px;
     width: 100%;
-    box-sizing: border-box;
     word-break: break-word;
 }
 
@@ -150,31 +241,27 @@ header {
     gap: 8px;
 }
 
-.feladat-kartya.kesz h3 {
-    text-decoration: line-through;
-    opacity: 0.7;
-}
-
 .feladat-kartya.kesz {
     background: #2ecc71;
     opacity: 0.85;
 }
 
-main {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 24px;
-    padding: 0 16px 24px;
+.feladat-kartya.kesz h3 {
+    text-decoration: line-through;
+    opacity: 0.7;
 }
 
-
-input, textarea {
+input,
+textarea {
     width: 100%;
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 8px;
     border: none;
+}
+
+#feladatLeiras {
+    resize: vertical;
 }
 
 label {
@@ -187,8 +274,8 @@ button {
     border: none;
     border-radius: 10px;
     padding: 10px 14px;
-    background: var(--button-bg);
-    color: var(--text-color);
+    background: var(--gomb-hatter);
+    color: var(--szoveg-szin);
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -197,7 +284,7 @@ button {
 
 button:hover {
     transform: translateY(-1px);
-    background: var(--button-bg-hover);
+    background: var(--gomb-hatter-hover);
 }
 
 button:active {
@@ -211,11 +298,18 @@ button:disabled {
 }
 
 .feladat-torles {
-    background: var(--danger-bg);
+    background: var(--veszely-hatter);
 }
 
 .feladat-torles:hover {
-    background: var(--danger-bg-hover);
+    background: var(--veszely-hatter-hover);
+}
+
+.tema-valto {
+    background: transparent;
+    border: 1px solid var(--menu-hatter-hover);
+    color: var(--szoveg-szin);
+    box-shadow: none;
 }
 
 input[type="checkbox"] {
@@ -223,7 +317,7 @@ input[type="checkbox"] {
     width: 18px;
     height: 18px;
     border-radius: 4px;
-    border: 2px solid var(--checkbox-color);
+    border: 2px solid var(--jelolo-szin);
     display: inline-grid;
     place-content: center;
     cursor: pointer;
@@ -235,14 +329,7 @@ input[type="checkbox"]::before {
     height: 10px;
     transform: scale(0);
     transition: transform 0.12s ease-in-out;
-    box-shadow: inset 1em 1em var(--checkbox-color);
-}
-
-.tema-valto {
-    background: transparent;
-    border: 1px solid var(--menu-bg-hover);
-    color: var(--text-color);
-    box-shadow: none;
+    box-shadow: inset 1em 1em var(--jelolo-szin);
 }
 
 input[type="checkbox"]:checked::before {
@@ -252,6 +339,10 @@ input[type="checkbox"]:checked::before {
 .feladat-resz,
 .uj-feladat-resz {
     width: min(100%, 900px);
+}
+
+.uj-feladat-resz {
+    margin-top: auto;
 }
 
 .allapot {
@@ -287,14 +378,14 @@ input[type="checkbox"]:checked::before {
     height: 16px;
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.4);
-    border-top-color: var(--text-color);
+    border-top-color: var(--szoveg-szin);
     animation: spin 0.8s linear infinite;
 }
 
 .ures-allapot {
     padding: 16px;
     border-radius: 12px;
-    background: var(--surface-bg);
+    background: var(--felulet-hatter);
     margin-bottom: 12px;
     text-align: center;
 }
@@ -323,24 +414,6 @@ input[type="checkbox"]:checked::before {
     }
 }
 
-@media (min-width: 1000px) {
-    main {
-        display: grid;
-        grid-template-columns: minmax(280px, 1fr) minmax(420px, 2fr);
-        align-items: start;
-    }
-
-    .feladat-resz,
-    .uj-feladat-resz {
-        width: 100%;
-        max-width: none;
-    }
-
-    #feladatLeiras {
-        height: 430px;
-    }
-}
-
 .feladat-eszkozok {
     display: flex;
     gap: 12px;
@@ -354,7 +427,15 @@ input[type="checkbox"]:checked::before {
     margin-bottom: 0;
 }
 
-@media (max-width: 900px) {
+@media (min-width: 1100px) {
+    .feladat-resz,
+    .uj-feladat-resz {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 930px) {
     header {
         flex-direction: column;
         align-items: flex-start;
@@ -363,43 +444,99 @@ input[type="checkbox"]:checked::before {
     main {
         padding: 0 20px 24px;
     }
+    
 
     .uj-feladat-resz {
         width: min(100%, 560px);
     }
 
     .kartyak {
-        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
         gap: 10px;
     }
 }
 
-
-@media (max-width: 600px) {
-    .kartyak {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
-
-    .kartya,
-    .feladat-kartya {
-        padding: 14px;
-    }
-
+@media (max-width: 930px) {
     .navigacio-menu {
         display: none;
+        position: absolute;
+        top: 64px;
+        right: 16px;
         flex-direction: column;
-        width: 100%;
-        padding: 8px 0;
+        align-items: stretch;
+        width: min(90vw, 260px);
+        padding: 12px;
         gap: 8px;
+        border-radius: 14px;
+        background: rgba(82, 82, 116, 0.884);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(16px) saturate(140%);
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+        position: absolute;
+        overflow: hidden;
+    }
+
+    .navigacio-menu::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(24, 24, 30, 0.65);
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        z-index: -1;
+    }
+
+    body.vilagos .navigacio-menu {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    body.vilagos .navigacio-menu::before {
+        background: rgba(255, 255, 255, 0.7);
     }
 
     .navigacio-menu.menu-nyitva {
         display: flex;
     }
 
+    .navigacio-menu .tema-valto {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .navigacio-menu .kereso-urlap {
+        width: 100%;
+    }
+
+    .navigacio-menu .kereso-urlap input {
+        min-width: 0;
+        width: 100%;
+    }
+
     .hamburger-ikon {
         display: block;
     }
+}
+@media (max-width: 500px) {
+    .kartyak {
+        grid-template-columns: 1fr;
+    }
 
+    .kartya,
+    .feladat-kartya {
+        padding: 14px;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 930px) {
+    .kartyak {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
+}
+
+@media (min-width: 931px) {
+    .kartyak {
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+    }
 }

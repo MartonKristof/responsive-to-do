@@ -14,6 +14,7 @@ const feladatUrlap = document.getElementById('ujFeladatUrlap');
 const feladatCimInput = document.getElementById('feladatCim');
 const feladatLeirasInput = document.getElementById('feladatLeiras');
 const keresoInput = document.getElementById('feladatKereses');
+const keresoUrlap = document.getElementById('keresoUrlap');
 const feladatokKapcsoloGomb = document.getElementById('feladatokKapcsolo');
 const hamburgerGomb = document.getElementById('hamburgerGomb');
 const navigacioMenu = document.getElementById('navigacio');
@@ -323,6 +324,15 @@ if (feladatLeirasInput) {
 if (keresoInput) {
     keresoInput.addEventListener('input', (esemeny) => {
         keresoKifejezes = esemeny.target.value.trim();
+        mutassMindet = false;
+        feladatokRenderel();
+    });
+}
+
+if (keresoUrlap) {
+    keresoUrlap.addEventListener('submit', (esemeny) => {
+        esemeny.preventDefault();
+        keresoKifejezes = keresoInput ? keresoInput.value.trim() : '';
         mutassMindet = false;
         feladatokRenderel();
     });

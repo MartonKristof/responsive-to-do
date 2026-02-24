@@ -8,18 +8,42 @@
     <title>Feladatkezelő</title>
 </head>
 <body>
-    <header>
+    <header class="fejlec">
         <div class="marka">
             <h1>Feladatkezelő</h1>
             <span class="hamburger-ikon" id="hamburgerGomb" role="button" aria-label="Menü megnyitása" aria-controls="navigacio" aria-expanded="false" tabindex="0"></span>
         </div>
-        <button type="button" id="temaValto" class="tema-valto">Világos mód</button>
-        <nav id="navigacio" class="navigacio-menu">
-            <a href="#uj-feladat">Új feladat</a>
-            <a href="#feladatlista">Feladatok listája</a>
-        </nav>
+        <div class="fejlec-jobb">
+            <nav id="navigacio" class="navigacio-menu">
+                <form id="keresoUrlap" class="kereso-urlap" role="search">
+                    <label class="csak-olvaso" for="feladatKereses">Keresés</label>
+                    <input type="search" id="feladatKereses" placeholder="Keresés a feladatok között" aria-label="Feladatok keresése">
+                    <button type="submit" class="kereso-gomb" aria-label="Keresés">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.47 6.47 0 0 0 4.23-1.57l.27.28v.79l5 5a1 1 0 0 0 1.41-1.41zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z" fill="currentColor"/>
+                        </svg>
+                    </button>
+                </form>
+                <a href="#uj-feladat">Új feladat</a>
+                <a href="#feladatlista">Feladatok listája</a>
+                <button type="button" id="temaValto" class="tema-valto">Világos mód</button>
+            </nav>
+        </div>
     </header>
     <main>
+        <div class="feladat-resz">
+            <span id="feladatlista"></span>
+            <h2>Feladatok</h2>
+            <div class="feladat-eszkozok">
+                <button type="button" id="feladatokKapcsolo">Összes megjelenítése</button>
+            </div>
+            <div id="allapotUzenet" class="allapot" role="status" aria-live="polite" hidden></div>
+            <div id="betoltesAllapot" class="betoltes" aria-live="polite" hidden>Betöltés...</div>
+            <div id="uresAllapot" class="ures-allapot" hidden>Nincs megjeleníthető feladat.</div>
+            <div class="kartyak">
+                
+            </div>
+        </div>
         <div class="uj-feladat-resz" id="uj-feladat">
             <div class="kartya">
                 <h2>Új feladat</h2>
@@ -32,20 +56,6 @@
                     <small id="leirasHibaUzenet" class="urlap-hiba" role="alert" hidden></small>
                     <button type="submit">Hozzáadás</button>
                 </form>
-            </div>
-        </div>
-        <div class="feladat-resz">
-            <span id="feladatlista"></span>
-            <h2>Feladatok</h2>
-            <div class="feladat-eszkozok">
-                <input type="search" id="feladatKereses" placeholder="Keresés a feladatok között" aria-label="Feladatok keresése">
-                <button type="button" id="feladatokKapcsolo">Összes megjelenítése</button>
-            </div>
-            <div id="allapotUzenet" class="allapot" role="status" aria-live="polite" hidden></div>
-            <div id="betoltesAllapot" class="betoltes" aria-live="polite" hidden>Betöltés...</div>
-            <div id="uresAllapot" class="ures-allapot" hidden>Nincs megjeleníthető feladat.</div>
-            <div class="kartyak">
-
             </div>
         </div>
     </main>
