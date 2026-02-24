@@ -9,12 +9,14 @@ const cardsContainer = document.querySelector('.cards');
 const taskForm = document.getElementById('newTaskForm');
 const taskTitleInput = document.getElementById('taskTitle');
 const taskDescriptionInput = document.getElementById('taskDescription');
+const searchInput = document.getElementById('searchTasks');
 const toggleTasksButton = document.getElementById('toggleTasks');
 const hamburgerButton = document.getElementById('hamburger');
 const menu = document.getElementById('menu');
 const themeToggleButton = document.getElementById('themeToggle');
 const DEFAULT_TASK_LIMIT = 10;
 let showAllTasks = false;
+let searchQuery = '';
 
 // Feladatok lekérése az API-ról
 async function fetchTasks() {
@@ -74,19 +76,20 @@ function renderTasks() {
     }
     cardsContainer.innerHTML = '';
     const fragment = document.createDocumentFragment();
-    const visibleTasks = showAllTasks ? tasks : tasks.slice(0, DEFAULT_TASK_LIMIT);
+    const filteredTasks = getFilteredTasks();
+    const visibleTasks = showAllTasks ? filteredTasks : filteredTasks.slice(0, DEFAULT_TASK_LIMIT);
     visibleTasks.forEach(task => {
         fragment.appendChild(createTaskCard(task));
     });
     cardsContainer.appendChild(fragment);
-    updateToggleButton();
+    updateToggleButton(filteredTasks.length);
 }
 
-function updateToggleButton() {
+function updateToggleButton(taskCount) {
     if (!toggleTasksButton) {
         return;
     }
-    if (tasks.length <= DEFAULT_TASK_LIMIT) {
+    if (taskCount <= DEFAULT_TASK_LIMIT) {
         toggleTasksButton.hidden = true;
         return;
     }
@@ -94,36 +97,54 @@ function updateToggleButton() {
     toggleTasksButton.textContent = showAllTasks ? 'Vissza 10-re' : 'Összes megjelenítése';
 }
 
+function getFilteredTasks() {
+    if (!searchQuery) {
+        return tasks;
+    }
+    const normalizedQuery = searchQuery.toLowerCase();
+    return tasks.filter(task => task.title.toLowerCase().includes(normalizedQuery));
+}
+
 // Új feladat létrehozása
-taskForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const titleValue = taskTitleInput.value.trim();
-    const descriptionValue = taskDescriptionInput.value.trim();
-    if (!titleValue) {
-        return;
-    }
-    const newTask = {
-        title: descriptionValue ? `${titleValue} — ${descriptionValue}` : titleValue,
-        completed: false,
-        userId: 1
-    };
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(newTask)
-        });
-        const createdTask = await response.json();
-        tasks.unshift(createdTask);
+if (taskForm) {
+    taskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const titleValue = taskTitleInput.value.trim();
+        const descriptionValue = taskDescriptionInput.value.trim();
+        if (!titleValue) {
+            return;
+        }
+        const newTask = {
+            title: descriptionValue ? `${titleValue} — ${descriptionValue}` : titleValue,
+            completed: false,
+            userId: 1
+        };
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTask)
+            });
+            const createdTask = await response.json();
+            tasks.unshift(createdTask);
+            renderTasks();
+            taskTitleInput.value = '';
+            taskDescriptionInput.value = '';
+        } catch (error) {
+            console.error('Hiba új feladat létrehozásakor:', error);
+        }
+    });
+}
+
+if (searchInput) {
+    searchInput.addEventListener('input', (event) => {
+        searchQuery = event.target.value.trim();
+        showAllTasks = false;
         renderTasks();
-        taskTitleInput.value = '';
-        taskDescriptionInput.value = '';
-    } catch (error) {
-        console.error('Hiba új feladat létrehozásakor:', error);
-    }
-});
+    });
+}
 
 if (toggleTasksButton) {
     toggleTasksButton.addEventListener('click', () => {
