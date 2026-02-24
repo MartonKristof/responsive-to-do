@@ -21,9 +21,14 @@ Az alkalmazás alapértelmezetten 10 feladatot jelenít meg, de az „Összes me
 - Trello
 
 ```
-project/
-├── index.html
-├── style.css
-├── script.js
-└── README.md
+responsive-to-do
+    │   index.html
+    │   README.md
+    │   script.js
+    │   style.css
+    │
+    └───assets
+        ├───icons
+        │       favicon.ico
+        └───images
 ```
