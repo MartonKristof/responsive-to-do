@@ -4,32 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css"> 
-    <link rel="icon" href="assets/icons/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/icons/favicon.ico">
     <title>Feladatkezelő</title>
 </head>
 <body>
     <header>
-        <h1>Feladatkezelő</h1>
-        <span class="hamburger" id="hamburger"></span>
+        <div class="brand">
+            <h1>Feladatkezelő</h1>
+            <span class="hamburger" id="hamburger"></span>
+        </div>
+        <button type="button" id="themeToggle" class="theme-toggle">Világos mód</button>
         <nav id="menu" class="menu">
+<<<<<<< HEAD
             <a href="#newTaskForm">Új feladat</a>
+=======
+            <a href="#uj-feladat">Új feladat</a>
+>>>>>>> proba-ag
             <a href="#feladatlista">Feladatok listája</a>
         </nav>
     </header>
     <main>
-        <div class="NewToDo">
-            <card>
+        <div class="NewToDo" id="uj-feladat">
+            <div class="card">
                 <h2>Új feladat</h2>
                 <form id="newTaskForm">
                     <input type="text" id="taskTitle" placeholder="Feladat címe" required>
                     <textarea id="taskDescription" placeholder="Feladat leírása" required></textarea>
                     <button type="submit">Hozzáadás</button>
                 </form>
-            </card>
+            </div>
         </div>
         <div class="ToDo">
             <span id="feladatlista"></span>
             <h2>Feladatok</h2>
+            <button type="button" id="toggleTasks">Összes megjelenítése</button>
             <div class="cards">
 
             </div>
